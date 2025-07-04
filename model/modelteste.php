@@ -1,5 +1,5 @@
 <?php
-// http://localhost/minoru/sistema_vendas_25/model/modelteste.php
+
 header('Content-Type: text/plain; charset=utf-8');
 
 require_once __DIR__ . '/Entidade.php';
@@ -68,38 +68,36 @@ echo "\n";
 print_r($produtoMouse);
 echo "\n";
 
-// 4. Criando Itens do Pedido 
-echo"4. Criando Itens do Pedido...\n";
+// 4. Criando Itens do Pedido
+echo "4. Criando Itens do Pedido...\n";
 $item1 = new ItemPedido(201, 5001, $produtoNotebook, 1, $produtoNotebook->getPreco());
-$item2 = new ItemPedido(201, 5001, $produtoMouse, 1, $produtoMouse->getPreco());
-echo "\n";
+$item2 = new ItemPedido(201, 5001, $produtoMouse, 2, $produtoMouse->getPreco());
+
 print_r($item1);
 echo "\n";
 print_r($item2);
+echo "\n";
 
-// 5. Crando o pedido
-echo"5. Criando o Pedido completo...\n";
+// 5. Criando o pedido
+echo "5. Criando o Pedido completo...\n";
 $itensDoPedido = [$item1, $item2];
 
-$pedido = new pedido(
+$pedido = new Pedido(
     5001,
     $cliente,
     date('Y-m-d H:i:s'),
     $formaPagamentoCartao,
     'Pendente',
     true,
-    [
-        // new ItemPedido(1, $produtoNotebook, 1, 7500.50, true, $dataAtual, $dataAtual, $adminUser),
-        // new ItemPedido(2, $produtoMouse, 2, 301.50, true, $dataAtual, $dataAtual, $adminUser)
-    ],
+    $itensDoPedido,
     $dataAtual,
     $dataAtual,
     $cliente
 );
+
 echo "\n";
 print_r($pedido);
 echo "\n";
-
 
 
 echo "\n===============================================\n";
