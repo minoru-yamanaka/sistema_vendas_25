@@ -41,6 +41,26 @@ class UsuarioDAO
         );
     }
 
+    public function create(Usuario $usuario, int $adminId): bool
+    {
+        $sql = "INSERT INTO usuario (nome_completo, nome_usuario, senha, email, telefone, cpf, is_admin, token, usuario_atualizacao) 
+                VALUES (:nome_completo, :nome_usuario, :senha, :email, :telefone, :cpf, :is_admin, :token, :user_id)";
+        
+        $stmt = $this->db->prepare($sql);
+        
+        return $stmt->execute([
+            ':nome_completo' => $usuario->getNomeCompleto(),
+            ':nome_usuario' => $usuario->getNomeUsuario(),
+            ':senha' => $usuario->getSenha(),
+            ':email' => $usuario->getEmail(),
+            ':telefone' => $usuario->getTelefone(),
+            ':cpf' => $usuario->getCpf(),
+            ':is_admin' => (int)$usuario->isAdmin(),
+            ':token' => $usuario->getToken(),
+            ':user_id' => $adminId
+        ]);
+    }
+
     public function getById(int $id): ?Usuario
     {
         $stmt = $this->db->prepare("SELECT * FROM usuario WHERE id = :id");
@@ -102,5 +122,4 @@ class UsuarioDAO
         $stmt = $this->db->prepare("DELETE FROM usuario WHERE id = :id");
         return $stmt->execute([':id' => $id]);
     }
-
 }
