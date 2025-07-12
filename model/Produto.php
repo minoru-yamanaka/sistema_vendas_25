@@ -35,9 +35,9 @@ class Produto extends Entidade
 
     //
 
-    public function setImagemUrl(?string $url): void
-    {
-        $this->imagemUrl = $url;
-    }
+    // public function setImagemUrl(?string $url): void
+    // {
+    //     $this->imagemUrl = $url;
+    // }
 
 }

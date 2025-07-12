@@ -27,6 +27,12 @@ class ProdutoDAO
             $categoria = $categoriaDao->getById($row['categoria_id']);
         }
 
+        // Debug: verificar se o campo imagemUrl existe na consulta
+        $imagemUrl = null;
+        if (array_key_exists('imagemUrl', $row)) {
+            $imagemUrl = $row['imagemUrl'];
+        }
+
         return new Produto(
             $row['id'],
             $row['nome'],
@@ -37,7 +43,7 @@ class ProdutoDAO
             $row['data_criacao'],
             $row['data_atualizacao'],
             $usuarioAtualizacao,
-            $row['imagemUrl'] ?? null // ← Adicionado aqui
+            $imagemUrl // Usando a variável verificada
         );
     }
 
@@ -55,7 +61,7 @@ class ProdutoDAO
             ':preco' => $produto->getPreco(),
             ':categoria_id' => $categoriaId,
             ':user_id' => $usuarioId,
-            ':imagemUrl' => $produto->getImagemUrl() // ← Adicionado aqui
+            ':imagemUrl' => $produto->getImagemUrl()
         ]);
     }
 
@@ -82,13 +88,15 @@ class ProdutoDAO
             ':categoria_id' => $categoriaId,
             ':ativo' => (int)$produto->isAtivo(),
             ':user_id' => $usuarioId,
-            ':imagemUrl' => $produto->getImagemUrl() // ← Adicionado aqui
+            ':imagemUrl' => $produto->getImagemUrl()
         ]);
     }
 
     public function getAll(bool $somenteAtivos = true): array
     {
-        $sql = "SELECT * FROM produto" . ($somenteAtivos ? " WHERE ativo = 1" : "") . " ORDER BY nome";
+        // Certificar que o SELECT inclui o campo imagemUrl
+        $sql = "SELECT id, nome, descricao, preco, categoria_id, ativo, data_criacao, data_atualizacao, usuario_atualizacao, imagemUrl FROM produto" . 
+               ($somenteAtivos ? " WHERE ativo = 1" : "") . " ORDER BY nome";
         $stmt = $this->db->query($sql);
         $result = [];
         foreach ($stmt->fetchAll() as $row) {
@@ -99,14 +107,12 @@ class ProdutoDAO
 
     public function getById(int $id): ?Produto
     {
-        $stmt = $this->db->prepare("SELECT * FROM produto WHERE id = :id");
+        // Certificar que o SELECT inclui o campo imagemUrl
+        $stmt = $this->db->prepare("SELECT id, nome, descricao, preco, categoria_id, ativo, data_criacao, data_atualizacao, usuario_atualizacao, imagemUrl FROM produto WHERE id = :id");
         $stmt->execute([':id' => $id]);
         $data = $stmt->fetch();
         return $data ? $this->mapObject($data) : null;
     }
-
-
-    // Os métodos softDelete, hardDelete e getAll continuam iguais
 
     public function softDelete(int $id, int $usuarioId): bool
     {

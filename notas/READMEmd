@@ -100,3 +100,13 @@ SELECT * FROM produto;
 
 --
 is_admin = 1 para funcionar
+
+-- 
+
+Solução:
+Você precisa usar URLs diretas para imagens. Aqui estão algumas opções:
+1. URLs de teste válidas:
+https://via.placeholder.com/300x200/0066cc/ffffff?text=Smartphone
+https://via.placeholder.com/300x200/ff6600/ffffff?text=Fone+Bluetooth
+https://via.placeholder.com/300x200/009900/ffffff?text=Smart+TV
+https://picsum.photos/300/200?random=1

@@ -33,7 +33,7 @@ require_once __DIR__ . '/../template/header.php';
 
 <form action="acoes.php" method="POST">
 
-    // img
+    <!-- img -->
     <div class="form-group">
         <label for="imagemUrl">URL da Imagem</label>
         <input type="text" name="imagemUrl" id="imagemUrl" class="form-control"

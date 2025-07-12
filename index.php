@@ -25,14 +25,25 @@ if (isset($_SESSION['flash_message'])) {
 }
 ?>
 
+
+
 <h1>Nosso Catálogo de Produtos</h1>
 <p>Confira nossas ofertas especiais.</p>
+
+
 
 <div class="product-grid">
     <?php foreach ($produtos as $produto): ?>
         <div class="card">
             <div class="card-image">
+
+                 
                 <img src="<?= htmlspecialchars($produto->getImagemUrl()) ?>" alt="<?= htmlspecialchars($produto->getNome()) ?>">
+                
+                <!-- <img src="<?= htmlspecialchars($produto->getImagemUrl()) ?>" 
+                     alt="<?= htmlspecialchars($produto->getNome()) ?>"
+                     onerror="this.src='https://static.vecteezy.com/system/resources/thumbnails/004/141/669/small_2x/no-photo-or-blank-image-icon-loading-images-or-missing-image-mark-image-not-available-or-image-coming-soon-sign-simple-nature-silhouette-in-frame-isolated-illustration-vector.jpg'">
+             -->
             </div>
             <div class="card-body">
                 <h2 class="card-title"><?= htmlspecialchars($produto->getNome()) ?></h2>
