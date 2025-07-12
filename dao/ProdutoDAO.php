@@ -20,10 +20,9 @@ class ProdutoDAO
             $usuarioDao = new UsuarioDAO();
             $usuarioAtualizacao = $usuarioDao->getById($row['usuario_atualizacao']);
         }
-        
+
         $categoria = null;
         if (!empty($row['categoria_id'])) {
-            // Supondo que você tenha o CategoriaDAO pronto.
             $categoriaDao = new CategoriaDAO(); 
             $categoria = $categoriaDao->getById($row['categoria_id']);
         }
@@ -37,14 +36,15 @@ class ProdutoDAO
             (bool)$row['ativo'],
             $row['data_criacao'],
             $row['data_atualizacao'],
-            $usuarioAtualizacao
+            $usuarioAtualizacao,
+            $row['imagemUrl'] ?? null // ← Adicionado aqui
         );
     }
 
     public function create(Produto $produto, int $usuarioId): bool
     {
-        $sql = "INSERT INTO produto (nome, descricao, preco, categoria_id, usuario_atualizacao) 
-                VALUES (:nome, :descricao, :preco, :categoria_id, :user_id)";
+        $sql = "INSERT INTO produto (nome, descricao, preco, categoria_id, usuario_atualizacao, imagemUrl) 
+                VALUES (:nome, :descricao, :preco, :categoria_id, :user_id, :imagemUrl)";
         $stmt = $this->db->prepare($sql);
 
         $categoriaId = $produto->getCategoria() ? $produto->getCategoria()->getId() : null;
@@ -54,16 +54,36 @@ class ProdutoDAO
             ':descricao' => $produto->getDescricao(),
             ':preco' => $produto->getPreco(),
             ':categoria_id' => $categoriaId,
-            ':user_id' => $usuarioId
+            ':user_id' => $usuarioId,
+            ':imagemUrl' => $produto->getImagemUrl() // ← Adicionado aqui
         ]);
     }
 
-    public function getById(int $id): ?Produto
+    public function update(Produto $produto, int $usuarioId): bool
     {
-        $stmt = $this->db->prepare("SELECT * FROM produto WHERE id = :id");
-        $stmt->execute([':id' => $id]);
-        $data = $stmt->fetch();
-        return $data ? $this->mapObject($data) : null;
+        $sql = "UPDATE produto SET 
+                    nome = :nome, 
+                    descricao = :descricao, 
+                    preco = :preco, 
+                    categoria_id = :categoria_id, 
+                    ativo = :ativo,
+                    usuario_atualizacao = :user_id,
+                    imagemUrl = :imagemUrl 
+                WHERE id = :id";
+        $stmt = $this->db->prepare($sql);
+
+        $categoriaId = $produto->getCategoria() ? $produto->getCategoria()->getId() : null;
+
+        return $stmt->execute([
+            ':id' => $produto->getId(),
+            ':nome' => $produto->getNome(),
+            ':descricao' => $produto->getDescricao(),
+            ':preco' => $produto->getPreco(),
+            ':categoria_id' => $categoriaId,
+            ':ativo' => (int)$produto->isAtivo(),
+            ':user_id' => $usuarioId,
+            ':imagemUrl' => $produto->getImagemUrl() // ← Adicionado aqui
+        ]);
     }
 
     public function getAll(bool $somenteAtivos = true): array
@@ -77,30 +97,16 @@ class ProdutoDAO
         return $result;
     }
 
-    public function update(Produto $produto, int $usuarioId): bool
+    public function getById(int $id): ?Produto
     {
-        $sql = "UPDATE produto SET 
-                    nome = :nome, 
-                    descricao = :descricao, 
-                    preco = :preco, 
-                    categoria_id = :categoria_id, 
-                    ativo = :ativo,
-                    usuario_atualizacao = :user_id 
-                WHERE id = :id";
-        $stmt = $this->db->prepare($sql);
-
-        $categoriaId = $produto->getCategoria() ? $produto->getCategoria()->getId() : null;
-
-        return $stmt->execute([
-            ':id' => $produto->getId(),
-            ':nome' => $produto->getNome(),
-            ':descricao' => $produto->getDescricao(),
-            ':preco' => $produto->getPreco(),
-            ':categoria_id' => $categoriaId,
-            ':ativo' => (int)$produto->isAtivo(),
-            ':user_id' => $usuarioId
-        ]);
+        $stmt = $this->db->prepare("SELECT * FROM produto WHERE id = :id");
+        $stmt->execute([':id' => $id]);
+        $data = $stmt->fetch();
+        return $data ? $this->mapObject($data) : null;
     }
+
+
+    // Os métodos softDelete, hardDelete e getAll continuam iguais
 
     public function softDelete(int $id, int $usuarioId): bool
     {

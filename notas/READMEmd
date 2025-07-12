@@ -1,0 +1,102 @@
+```
+http://localhost/sistema_vendas/pages/carrinho/index.php
+```
+
+```
+admin@sistema.com
+admin123
+```
+
+```
+<?php
+require_once __DIR__ . '/Entidade.php';
+class Produto extends Entidade
+{
+    private string $nome;
+    private ?string $descricao;
+    private float $preco;
+    private ?Categoria $categoria;
+    public function __construct(
+        ?int $id, string $nome, ?string $descricao, float $preco, ?Categoria $categoria, bool $ativo = true, 
+        ?string $dataCriacao = null, ?string $dataAtualizacao = null, ?Usuario $usuarioAtualizacao = null,
+        ?string $imagemUrl = null
+    ) {
+        parent::__construct($id, $ativo, $dataCriacao, $dataAtualizacao, $usuarioAtualizacao);
+        $this->nome = $nome;
+        $this->descricao = $descricao;
+        $this->preco = $preco;
+        $this->categoria = $categoria;
+    }
+    public function getNome(): string { return $this->nome; }
+    public function getDescricao(): ?string { return $this->descricao; }
+    public function getPreco(): float { return $this->preco; }
+    public function getCategoria(): ?Categoria { return $this->categoria; }
+    public function getImagemUrl(): string 
+    {
+        return $this->imagemUrl ?? 'https://static.vecteezy.com/system/resources/thumbnails/004/141/669/small_2x/no-photo-or-blank-image-icon-loading-images-or-missing-image-mark-image-not-available-or-image-coming-soon-sign-simple-nature-silhouette-in-frame-isolated-illustration-vector.jpg';
+    }
+}
+```
+
+1 .
+add
+
+http://localhost/phpmyadmin/
+
+2.
+USE sistema_vendas;
+
+ALTER TABLE produto
+ADD COLUMN imagemUrl TEXT;
+
+UPDATE produto
+SET imagemUrl = 'https://exemplo.com/imagens/produto1.jpg',
+    data_atualizacao = CURRENT_TIMESTAMP,
+    usuario_atualizacao = 2
+WHERE id = 1;
+
+SELECT * FROM produto;
+
+3.
+
+USE sistema_vendas;
+
+INSERT INTO categoria (nome, descricao)
+VALUES ('Eletrônicos', 'Dispositivos eletrônicos');
+--
+USE sistema_vendas;
+
+SELECT id, nome FROM categoria;
+--
+4.
+
+-- Seleciona o banco
+USE sistema_vendas;
+
+-- Recupera o ID da categoria "Eletrônicos"
+SET @categoria_eletronicos_id = (
+    SELECT id FROM categoria WHERE nome = 'Eletrônicos' LIMIT 1
+);
+
+-- Recupera o ID do usuário "mariaadmin"
+SET @usuario_admin_id = (
+    SELECT id FROM usuario WHERE nome_usuario = 'mariaadmin' LIMIT 1
+);
+
+-- Insere produtos vinculados à categoria "Eletrônicos"
+INSERT INTO produto (nome, descricao, preco, categoria_id, usuario_atualizacao)
+VALUES 
+('Smartphone XYZ', 'Smartphone com 128GB, câmera tripla e tela AMOLED', 1999.99, @categoria_eletronicos_id, @usuario_admin_id),
+('Fone de Ouvido Bluetooth', 'Fone com cancelamento de ruído e bateria de 30h', 299.90, @categoria_eletronicos_id, @usuario_admin_id),
+('Smart TV 50"', 'Smart TV 4K com sistema Android e HDR10', 2599.00, @categoria_eletronicos_id, @usuario_admin_id);
+
+
+-- Seleciona o banco de dados
+USE sistema_vendas;
+
+-- Exibe todos os produtos
+SELECT * FROM produto;
+
+
+--
+is_admin = 1 para funcionar
